@@ -41,7 +41,7 @@ def configure(ctx):
 def clean(ctx):
     print("cleaning...")
     print(f"param from configuration: {ctx.persisted.aws_region}")
-    ctx.run("ls libs")
+    ctx.run("ls scylla_arms")
     sleep(0.5)
     print("cleaning complete!")
 
