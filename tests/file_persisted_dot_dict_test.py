@@ -1,7 +1,7 @@
 # pylint: disable=W,C,R
 import json
 
-from libs.persisted_dicts import FilePersistedDotDict
+from scylla_arms.persisted_dicts import FilePersistedDotDict
 import pytest
 
 

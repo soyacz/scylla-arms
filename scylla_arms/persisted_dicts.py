@@ -1,4 +1,3 @@
-# pylint: disable=W,C,R
 import json
 import os
 from collections.abc import MutableMapping

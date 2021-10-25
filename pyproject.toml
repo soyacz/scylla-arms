@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "scylla-arms"
+version = "0.1.0"
+description = "Tool for running Scylla tasks and pipelines"
+
+[tool.poetry.scripts]
+arms = 'scylla_arms.main:program.run'
+
+[tool.poetry.dependencies]
+python = "^3.8"
+invoke = "^1.6.0"
+pydantic = "^1.8.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

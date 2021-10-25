@@ -1,4 +1,3 @@
-# pylint: disable=W,C,R
 import os
 import re
 

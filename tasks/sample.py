@@ -1,4 +1,3 @@
-# pylint: disable=W,C,R
 import os
 from enum import Enum
 from time import sleep
@@ -6,7 +5,7 @@ from typing import List, Union
 
 from invoke import task, Collection
 
-from libs.config import Settings
+from scylla_arms.config import Settings
 
 
 class Backends(str, Enum):

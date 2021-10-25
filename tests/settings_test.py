@@ -2,7 +2,7 @@
 import os
 from typing import List
 
-from libs.config import Settings
+from scylla_arms.config import Settings
 
 
 class TestSettings:
