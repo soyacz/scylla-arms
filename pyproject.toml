@@ -2,6 +2,7 @@
 name = "scylla-arms"
 version = "0.1.0"
 description = "Tool for running Scylla tasks and pipelines"
+authors = []
 
 [tool.poetry.scripts]
 arms = 'scylla_arms.main:program.run'

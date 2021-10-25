@@ -39,28 +39,27 @@ pipeline {
             steps {
                 sh "pip3 install virtualenv"
                 sh "python3 -m virtualenv poc-venv"
-                sh "source poc-venv/bin/activate && pip3 install invoke rich pydantic"
+                sh "source poc-venv/bin/activate && pip3 install scylla-arms"
             }
         }
         stage('Clean') {
             steps {
-                sh "[[ -f persisted_params.json ]] && rm persisted_params.json || echo 'No persisted_params file cleanup needed'"
-                sh "JENKINS_PARAMS='${params}' poc-venv/bin/invoke sample.configure sample.clean"
+                sh "JENKINS_PARAMS='${params}' poc-venv/bin/arms sample.configure sample.clean"
             }
         }
         stage('Build') {
             steps {
-                sh "poc-venv/bin/invoke sample.build"
+                sh "poc-venv/bin/arms sample.build"
             }
         }
         stage('Test') {
             steps {
-                sh "poc-venv/bin/invoke sample.test"
+                sh "poc-venv/bin/arms sample.test"
             }
         }
         stage('Package') {
             steps {
-                sh "poc-venv/bin/invoke sample.package"
+                sh "poc-venv/bin/arms sample.package"
             }
         }
     }
