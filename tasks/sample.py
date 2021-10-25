@@ -6,6 +6,7 @@ from typing import List, Union
 from invoke import task, Collection
 
 from scylla_arms.config import Settings
+from scylla_arms.configparser import properties_parser, build_metadata_parser
 
 
 class Backends(str, Enum):
@@ -50,8 +51,15 @@ def build(ctx):
     print("started building...")
     print(f"Setting new context param 'something' to 'test'")
     ctx.persisted.something = "test"
-    with open("build_output.txt", "w") as build_out_file:
+    prop = properties_parser("tasks/sample.properties")
+    build_out_file_path = prop.get("buildOutputFile")
+    build_metadata_path = prop.get("buildMetadataFile")
+    with open(build_out_file_path, "w") as build_out_file:
         ctx.run("lscpu", out_stream=build_out_file)
+    res = ctx.run("lscpu --version")
+    build_metadata = build_metadata_parser(build_metadata_path, new_file=True)
+    build_metadata.set("lscpu-version", res.stdout.strip())
+    build_metadata.commit()
     sleep(1)
     print("build complete!")
 
