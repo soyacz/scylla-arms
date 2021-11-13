@@ -32,18 +32,30 @@ def get_test_duration(ctx):
     env = prepare_sct_env_variables(params)
     print_sct_env_vars(env)
     out = ctx.run(
-        f'./docker/env/hydra.sh output-conf -b {params["backend"]}', env=env, hide='out', timeout=60).stdout.strip()
+        f'./docker/env/hydra.sh output-conf -b {params["backend"]}',
+        env=env,
+        hide="out",
+        timeout=60,
+    ).stdout.strip()
     t_par = {
-        "test_duration": int(re.search(r'test_duration: ([\d]+)', out).group(1)),
+        "test_duration": int(re.search(r"test_duration: ([\d]+)", out).group(1)),
         "test_startup_timeout": 20,
         "test_teardown_timeout": 40,
         "collect_logs_timeout": 70,
         "resource_cleanup_timeout": 30,
         "send_email_timeout": 5,
     }
-    t_par["test_run_timeout"] = t_par["test_startup_timeout"] + t_par["test_duration"] + t_par["test_teardown_timeout"]
-    t_par["runner_timeout"] = t_par["test_run_timeout"] + t_par["collect_logs_timeout"] + \
-        t_par["resource_cleanup_timeout"] + t_par["send_email_timeout"]
+    t_par["test_run_timeout"] = (
+        t_par["test_startup_timeout"]
+        + t_par["test_duration"]
+        + t_par["test_teardown_timeout"]
+    )
+    t_par["runner_timeout"] = (
+        t_par["test_run_timeout"]
+        + t_par["collect_logs_timeout"]
+        + t_par["resource_cleanup_timeout"]
+        + t_par["send_email_timeout"]
+    )
     ctx.persisted.params["test_time_params"] = t_par
     print(f"test time parameters: \n {t_par}")
     ctx.persisted.save()
@@ -52,7 +64,7 @@ def get_test_duration(ctx):
 @task(get_test_duration)
 def all_tasks(ctx):
     print("hello world!")
-    print(f'params: {ctx.persisted.params=}')
+    print(f"params: {ctx.persisted.params=}")
     # print(f'param {ctx["params"]["aws_region"]=}')
     ctx["persisted"].save()
 

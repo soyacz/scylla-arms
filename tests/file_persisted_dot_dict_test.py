@@ -1,4 +1,3 @@
-# pylint: disable=W,C,R
 import json
 
 from scylla_arms.persisted_dicts import FilePersistedDotDict
@@ -6,7 +5,6 @@ import pytest
 
 
 class TestFilePersistedDotDict:
-
     def test_attribute_can_be_set_and_is_saved_to_file(self, tmp_path):
         persist_file_path = tmp_path / "pfile"
         d = FilePersistedDotDict(persist_file_path)

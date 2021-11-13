@@ -3,9 +3,9 @@ from enum import Enum
 from time import sleep
 from typing import List, Union
 
-from invoke import task, Collection
+from invoke import Collection, task
 
-from scylla_arms.config import Settings
+from scylla_arms.config import ArmsSettings, inject_persistent_models
 from scylla_arms.configparser import properties_parser, build_metadata_parser
 
 
@@ -14,40 +14,44 @@ class Backends(str, Enum):
     gce: str = "gce"
 
 
-class SampleSettings(Settings):
+class SampleArmsSettings(ArmsSettings):
     backend: Backends
     aws_region: Union[str, List]
     scylla_ami_id: str
-    gce_image_db: str
+    gce_image_db: str = "test_image"
     update_db_packages: str
     scylla_version: str
     scylla_repo: str
     scylla_mgmt_agent_version: str = ""
     scylla_mgmt_address: str
 
+    class Config:
+        env_prefix = "SAMPLE_"
+
 
 @task
 def configure(ctx):
     print("preparing configuration")
-    settings = SampleSettings()
-    config = ctx.persisted
-    config.clear()
-    config.update(**settings.dict())
-    print(f'configuration: {config.dict()}')
-    print(f'available AWS env vars: {[env for env in os.environ if env.startswith("AWS_")]}')
+    settings = SampleArmsSettings()
+    print(f"configuration: {settings.dict()}")
+    print(
+        f'available AWS env vars: {[env for env in os.environ if env.startswith("AWS_")]}'
+    )
 
 
 @task
-def clean(ctx):
+@inject_persistent_models
+def clean(ctx, settings: SampleArmsSettings):
     print("cleaning...")
-    print(f"param from configuration: {ctx.persisted.aws_region}")
+    print(f"param from configuration: {settings.aws_region}")
     ctx.run("ls scylla_arms")
     sleep(0.5)
     print("cleaning complete!")
 
 
 @task
-def build(ctx):
+@inject_persistent_models
+def build(ctx, settings: SampleArmsSettings):
     print("started building...")
     print(f"Setting new context param 'something' to 'test'")
     ctx.persisted.something = "test"
@@ -65,9 +69,12 @@ def build(ctx):
 
 
 @task
-def test(ctx):
+@inject_persistent_models
+def test(ctx, settings: SampleArmsSettings):
     print("started tests...")
-    print(f'Getting new context param "something": {ctx.persisted.something}')
+    print(f"loaded settings: {settings}")
+    assert settings.backend == Backends.aws
+    assert ctx.persisted.something == "test"
     sleep(1)
     print("tests complete!")
 

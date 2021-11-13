@@ -1,3 +1,3 @@
 from invoke import Program
 
-program = Program(version='0.1.0')
+program = Program(version="0.2.0")
