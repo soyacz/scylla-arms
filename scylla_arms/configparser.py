@@ -4,6 +4,7 @@ import os
 import re
 from pathlib import PurePath
 
+
 class jenkins_configparser:
     def __load(self):
         f = io.StringIO(f'[global]\n{self._data}')
@@ -18,7 +19,7 @@ class jenkins_configparser:
     def __init__(self, filename, spacer_left, delimiter, spacer_right, new_file=False):
         self.spacer_left = spacer_left
         self.delimiter = delimiter
-        self.spacer_right= spacer_right
+        self.spacer_right = spacer_right
         if isinstance(filename, PurePath):
             self._filename = str(filename)
         else:
@@ -38,16 +39,19 @@ class jenkins_configparser:
     def set(self, key, val):
         if not self.has_option(key):
             return self.__add(key, val)
-        self._data = re.sub(f'^{key}{self.spacer_left}{self.delimiter}{self.spacer_right}[^\n]*$', f'{key}{self.spacer_left}{self.delimiter}{self.spacer_right}{val}', self._data, flags=re.MULTILINE)
+        self._data = re.sub(f'^{key}{self.spacer_left}{self.delimiter}{self.spacer_right}[^\n]*$',
+                            f'{key}{self.spacer_left}{self.delimiter}{self.spacer_right}{val}', self._data, flags=re.MULTILINE)
         self.__load()
 
     def commit(self):
         with open(self._filename, 'w') as f:
             f.write(self._data)
 
+
 class properties_parser(jenkins_configparser):
     def __init__(self, filename, new_file=False):
         super().__init__(filename, '', '=', '', new_file)
+
 
 class build_metadata_parser(jenkins_configparser):
     def __init__(self, filename, new_file=False):

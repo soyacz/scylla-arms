@@ -41,7 +41,8 @@ def get_test_duration(ctx):
         "resource_cleanup_timeout": 30,
         "send_email_timeout": 5,
     }
-    t_par["test_run_timeout"] = t_par["test_startup_timeout"] + t_par["test_duration"] + t_par["test_teardown_timeout"]
+    t_par["test_run_timeout"] = t_par["test_startup_timeout"] + \
+        t_par["test_duration"] + t_par["test_teardown_timeout"]
     t_par["runner_timeout"] = t_par["test_run_timeout"] + t_par["collect_logs_timeout"] + \
         t_par["resource_cleanup_timeout"] + t_par["send_email_timeout"]
     ctx.persisted.params["test_time_params"] = t_par

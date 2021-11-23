@@ -34,7 +34,8 @@ def configure(ctx):
     config.clear()
     config.update(**settings.dict())
     print(f'configuration: {config.dict()}')
-    print(f'available AWS env vars: {[env for env in os.environ if env.startswith("AWS_")]}')
+    print(
+        f'available AWS env vars: {[env for env in os.environ if env.startswith("AWS_")]}')
 
 
 @task
