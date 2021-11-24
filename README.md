@@ -12,7 +12,7 @@ clone repository
 # Differences between invoke and arms:
 1. `arms` provides persistent storage for dictionaries -
 to enable passing params from one task to another when tasks are executed separately
-2. `arms` provides `Settings` class (based on `pydantic` `BaseSettings` class) - 
+2. `arms` provides `Settings` class (based on `pydantic` `BaseSettings` class) -
 which can use parameters from Jenkins params (when `JENKINS_PARAMS` env variable is present)
 
 # Examples
