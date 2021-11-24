@@ -5,12 +5,15 @@ import re
 from pathlib import PurePath
 
 
-class jenkins_configparser:
+class JenkinsConfigParser:
+    spacer_left: str
+    delimiter: str
+    spacer_right: str
+
     def __load(self):
-        f = io.StringIO(f"[global]\n{self._data}")
         self._cfg = configparser.ConfigParser()
         self._cfg.optionxform = str
-        self._cfg.read_file(f)
+        self._cfg.read_file(io.StringIO(f"[global]\n{self._data}"))
 
     def __add(self, key, val):
         self._data += (
@@ -18,18 +21,16 @@ class jenkins_configparser:
         )
         self.__load()
 
-    def __init__(self, filename, spacer_left, delimiter, spacer_right, new_file=False):
-        self.spacer_left = spacer_left
-        self.delimiter = delimiter
-        self.spacer_right = spacer_right
+    def __init__(self, filename, new_file=False):
         if isinstance(filename, PurePath):
             self._filename = str(filename)
         else:
             self._filename = filename
         if new_file and not os.path.exists(filename):
-            open(filename, "a").close()
-        with open(filename) as f:
-            self._data = f.read()
+            with open(file=filename, mode="a", encoding="utf-8"):
+                pass
+        with open(file=filename, mode="r", encoding="utf-8") as file:
+            self._data = file.read()
         self.__load()
 
     def get(self, key):
@@ -40,7 +41,8 @@ class jenkins_configparser:
 
     def set(self, key, val):
         if not self.has_option(key):
-            return self.__add(key, val)
+            self.__add(key, val)
+            return
         self._data = re.sub(
             f"^{key}{self.spacer_left}{self.delimiter}{self.spacer_right}[^\n]*$",
             f"{key}{self.spacer_left}{self.delimiter}{self.spacer_right}{val}",
@@ -50,15 +52,17 @@ class jenkins_configparser:
         self.__load()
 
     def commit(self):
-        with open(self._filename, "w") as f:
-            f.write(self._data)
+        with open(file=self._filename, mode="w", encoding="utf-8") as file:
+            file.write(self._data)
 
 
-class properties_parser(jenkins_configparser):
-    def __init__(self, filename, new_file=False):
-        super().__init__(filename, "", "=", "", new_file)
+class PropertiesParser(JenkinsConfigParser):
+    spacer_left: str = ""
+    delimiter: str = "="
+    spacer_right: str = ""
 
 
-class build_metadata_parser(jenkins_configparser):
-    def __init__(self, filename, new_file=False):
-        super().__init__(filename, "", ":", " ", new_file)
+class BuildMetadataParser(JenkinsConfigParser):
+    spacer_left: str = ""
+    delimiter: str = ":"
+    spacer_right: str = " "

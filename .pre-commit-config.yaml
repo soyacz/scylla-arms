@@ -29,3 +29,19 @@ repos:
         entry: autopep8 -i -j 2 --max-line-length=120
         language: system
         types: [ python ]
+
+    -   id: pylint
+        name: pylint
+        entry: pylint -j 2 --max-line-length=120 --disable=C0114,C0115,C0116,R0903
+        exclude: >
+            (?x)^(
+                tests/.*
+            )$
+        language: system
+        types: [python]
+
+    -   id: pylint
+        name: pylint-pytest
+        entry: pylint -j 2 --max-line-length=120 --disable=C0114,C0115,C0116,R0903,R0801 --load-plugins pylint_pytest tests
+        language: system
+        types: [ python ]
