@@ -6,12 +6,12 @@ from typing import List, Union
 from invoke import Collection, task
 
 from scylla_arms.config import ArmsSettings, inject_persistent_models
-from scylla_arms.configparser import properties_parser, build_metadata_parser
+from scylla_arms.configparser import PropertiesParser, BuildMetadataParser
 
 
 class Backends(str, Enum):
-    aws: str = "aws"
-    gce: str = "gce"
+    AWS: str = "aws"
+    GCE: str = "gce"
 
 
 class SampleArmsSettings(ArmsSettings):
@@ -30,7 +30,7 @@ class SampleArmsSettings(ArmsSettings):
 
 
 @task
-def configure(ctx):
+def configure(ctx):  # pylint: disable=unused-argument
     print("preparing configuration")
     settings = SampleArmsSettings()
     print(f"configuration: {settings.dict()}")
@@ -51,17 +51,17 @@ def clean(ctx, settings: SampleArmsSettings):
 
 @task
 @inject_persistent_models
-def build(ctx, settings: SampleArmsSettings):
+def build(ctx, settings: SampleArmsSettings):  # pylint: disable=unused-argument
     print("started building...")
-    print(f"Setting new context param 'something' to 'test'")
+    print("Setting new context param 'something' to 'test'")
     ctx.persisted.something = "test"
-    prop = properties_parser("tasks/sample.properties")
+    prop = PropertiesParser("tasks/sample.properties")
     build_out_file_path = prop.get("buildOutputFile")
     build_metadata_path = prop.get("buildMetadataFile")
-    with open(build_out_file_path, "w") as build_out_file:
+    with open(file=build_out_file_path, mode="w", encoding="utf-8") as build_out_file:
         ctx.run("lscpu", out_stream=build_out_file)
     res = ctx.run("lscpu --version")
-    build_metadata = build_metadata_parser(build_metadata_path, new_file=True)
+    build_metadata = BuildMetadataParser(build_metadata_path, new_file=True)
     build_metadata.set("lscpu-version", res.stdout.strip())
     build_metadata.commit()
     sleep(1)
@@ -73,21 +73,21 @@ def build(ctx, settings: SampleArmsSettings):
 def test(ctx, settings: SampleArmsSettings):
     print("started tests...")
     print(f"loaded settings: {settings}")
-    assert settings.backend == Backends.aws
+    assert settings.backend == Backends.AWS
     assert ctx.persisted.something == "test"
     sleep(1)
     print("tests complete!")
 
 
 @task
-def package(ctx):
+def package(ctx):  # pylint: disable=unused-argument
     print("started packaging...")
     sleep(1)
     print("packaging complete!")
 
 
 @task(configure, clean, build, test, package)
-def all_tasks(ctx):
+def all_tasks(ctx):  # pylint: disable=unused-argument
     print("hello world!")
 
 

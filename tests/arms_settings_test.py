@@ -1,3 +1,4 @@
+# pylint: disable=blacklisted-name
 import json
 import os
 
@@ -10,22 +11,25 @@ class SampleArmsSettings(ArmsSettings):
 
 
 class TestArmsSettings:
-    def test_arms_settings_are_persisted_upon_creation(self):
+    @staticmethod
+    def test_arms_settings_are_persisted_upon_creation():
         SampleArmsSettings(foo=2, bar="test")
         assert os.path.exists(
             "SampleArmsSettings.json"
         ), "SampleArmsSettings.json was not created upon settings creation"
 
-    def test_arms_settings_are_persisted_upon_modification(self):
+    @staticmethod
+    def test_arms_settings_are_persisted_upon_modification():
         settings = SampleArmsSettings(foo=2, bar="test")
         settings.foo = 4
         settings.bar = "test change"
-        with open("SampleArmsSettings.json") as f:
-            loaded_settings = json.load(f)
+        with open(file="SampleArmsSettings.json", mode="r", encoding="utf-8") as file:
+            loaded_settings = json.load(file)
         assert settings.foo == loaded_settings["foo"]
         assert settings.bar == loaded_settings["bar"]
 
-    def test_arms_settings_can_be_loaded_from_file(self):
+    @staticmethod
+    def test_arms_settings_can_be_loaded_from_file():
         SampleArmsSettings(foo=3, bar="test 2")
         settings = SampleArmsSettings.load()
         assert settings.foo == 3
@@ -33,19 +37,21 @@ class TestArmsSettings:
 
 
 class TestInjectPersistedModelDecorator:
-    def test_inject_persisted_model_decorator_injects_instance_of_arms_settings(self):
+    @staticmethod
+    def test_inject_persisted_model_decorator_injects_instance_of_arms_settings():
         @inject_persistent_models
-        def test_function(ctx, settings: SampleArmsSettings):
+        def _test_function(ctx, settings: SampleArmsSettings):  # pylint: disable=unused-argument
             assert settings.foo == 2
             assert settings.bar == "test"
 
         SampleArmsSettings(foo=2, bar="test")
-        test_function(ctx={})
+        _test_function(ctx={})  # pylint: disable=no-value-for-parameter
 
-    def test_inject_persisted_model_decorator_passes_all_provided_arguments(self):
+    @staticmethod
+    def test_inject_persisted_model_decorator_passes_all_provided_arguments():
         @inject_persistent_models
-        def test_function(ctx, settings: SampleArmsSettings, bar: int):
+        def _test_function(ctx, bar: int):  # pylint: disable=unused-argument
             assert bar == 88
 
         SampleArmsSettings(foo=2, bar="test")
-        test_function(ctx={}, bar=88)
+        _test_function(ctx={}, bar=88)

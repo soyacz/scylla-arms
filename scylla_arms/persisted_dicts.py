@@ -9,10 +9,10 @@ class FilePersistedDotDict(MutableMapping):
     Init kwargs are dict defaults"""
 
     def __init__(self, persist_file_path, *args, **kwargs):
-        self._store = dict()
+        self._store = {}
         self._persist_file_path = persist_file_path
         if os.path.exists(self._persist_file_path):
-            with open(self._persist_file_path, "r") as persist_file:
+            with open(file=self._persist_file_path, mode="r", encoding="utf-8") as persist_file:
                 kwargs.update(json.load(persist_file))
         self.update(dict(*args, **kwargs))  # use the free update to set keys
         self._persist()
@@ -30,8 +30,8 @@ class FilePersistedDotDict(MutableMapping):
     def __getattr__(self, item):
         try:
             return self._store[item]
-        except KeyError:
-            raise AttributeError(item)
+        except KeyError as error:
+            raise AttributeError(item) from error
 
     def __setattr__(self, key, value):
         if key in ("_store", "_persist_file_path"):
@@ -55,7 +55,7 @@ class FilePersistedDotDict(MutableMapping):
         return len(self._store)
 
     def _persist(self):
-        with open(self._persist_file_path, "w") as persist_file:
+        with open(file=self._persist_file_path, mode="w", encoding="utf-8") as persist_file:
             persist_file.write(json.dumps(self._store, indent=2))
 
     def dict(self):
